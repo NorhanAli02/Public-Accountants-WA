@@ -191,7 +191,6 @@ run: PublicAccountantsWA -> {
 **CPAs Licensed to Practice Public Accounting**
 
 Business Question: How many CPAs are actively licensed to practice public accounting?
-
 >>>malloy
 run: PublicAccountantsWA -> {
   where: Status = 'Licensed to practice public accounting'
