@@ -30,5 +30,17 @@ Based on the findings, the following actions are recommended:
 - Dataset: The dataset used in this analysis contains information about CPAs in Washington State, including their license status, geographic location, license expiration dates, and more.
 - Code: The analysis was conducted using Malloy queries to explore trends in the data. Please refer to the .malloynb file for the complete list of queries.
 
+## 📜 License
+This dataset and accompanying code are released under the **MIT License**. 
+
+You are free to:
+- Use, copy, modify, and distribute the data and code for any purpose.
+- Share it freely with attribution.
+
+**Disclaimer:** This dataset is provided "as is," without any warranties or guarantees. The creators are not responsible for any misuse or misinterpretation of the data.
+
+See the full [MIT License](LICENSE) for more details.
+
+
 
 
