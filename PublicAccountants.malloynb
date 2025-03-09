@@ -1,0 +1,208 @@
+>>>malloy
+source: PublicAccountantsWA is duckdb.table('./Washington_State_Certified_Public_Accountants_20250303.csv') extend {
+    rename: First_Name is `First Name`
+    rename: Last_Name is `Last Name`
+    rename: Expiration_Date is `Expiration Date`
+    rename: License_Number is `License Number`
+    rename: Board_Order is `Board Order`
+    rename: Last_Updated is `Last Updated`
+    rename: Middle_Name is `Middle Name`
+    rename: Original_Issue_Date is `Original Issue Date`
+    rename: Preferred_Name is `Preferred Name`
+
+
+
+    measure:
+    expired_cpas is LapsedLicensee.count()
+    total_cpas is count(License_Number) 
+    total_expiring_soon is count()
+    total_lapsed_licensee is count() {where : Status = 'Lapsed Licensee'}
+    total_licensed_to_practice_public_accounting is count() {where : Status = 'Licensed to practice public accounting'}
+    lapsed_certificateholder is count() {where : Status = 'Lapsed Certificateholder'}
+    retired_licensee is count() {where : Status = 'Retired Licensee'}
+    suspended_per_board_order is count() {where: Status = 'Suspended per Board Order'}
+
+    dimension: 
+    Original_Issue_Date_year is Original_Issue_Date.year
+    availability_period is days(Original_Issue_Date to Expiration_Date) / 365.25
+    Expiration_Date_year is Expiration_Date.year
+    
+
+}
+>>>markdown
+What are the different Status for Licences, and how many are there?
+>>>malloy
+run: PublicAccountantsWA -> {
+    group_by: Status
+}
+>>>markdown
+Visualization: Line chart for total cpas in each state
+>>>malloy
+# line_chart
+run: PublicAccountantsWA -> {
+  group_by: State
+  aggregate: total_cpas
+}
+>>>markdown
+## CPAs with Expiring Licenses
+Objective: Find CPAs whose licenses are expiring soon, using the Expiration Date.
+>>>malloy
+run: PublicAccountantsWA -> {
+  group_by: License_Number, First_Name, Last_Name, Expiration_Date
+  order_by: Expiration_Date asc
+}
+>>>markdown
+Names of CPAs from the United States
+>>>malloy
+run: PublicAccountantsWA -> {
+    group_by: First_Name, Last_Name, Country
+    where: Country = 'United States' 
+}
+>>>markdown
+## Distribution of CPAs by City
+Find the geographical distribution of CPAs based on their City and Country
+>>>malloy
+run: PublicAccountantsWA -> {
+    group_by: City, Country
+}
+>>>malloy
+run: PublicAccountantsWA -> {
+    where: First_Name ~ 'A%'
+    group_by: First_Name, Country
+}
+>>>markdown
+**What is the trend in the number of CPAs over time?**
+<<mark>> how many CPAs were originally issued licenses each year, allowing us to analyze trends over time <<mark>>
+>>>malloy
+run: PublicAccountantsWA -> {
+  group_by: Original_Issue_Date_year 
+  aggregate: total_cpas is count()
+  order_by: Original_Issue_Date_year desc
+}
+>>>markdown
+Findings:
+
+The analysis reveals the growth or decline in the number of CPAs over time.
+There may be notable increases during specific years, which could indicate external factors influencing the industry, such as economic conditions or changes in regulatory requirements.
+>>>malloy
+# line_chart
+run: PublicAccountantsWA -> {
+  group_by: Original_Issue_Date_year 
+  aggregate: total_cpas is count()
+  order_by: Original_Issue_Date_year desc
+}
+>>>markdown
+Visualization: Shape map of where state is each CPA is from if they are from the UNited States?
+>>>malloy
+# shape_map
+run: PublicAccountantsWA -> {
+  group_by: State
+  aggregate: total_cpas
+}
+>>>markdown
+Total CPAs based from each city
+>>>malloy
+run: PublicAccountantsWA -> {
+  group_by: City
+  aggregate: total_cpas
+}
+>>>markdown
+CPA Status of each
+>>>malloy
+run: PublicAccountantsWA -> {
+  group_by: Status
+  aggregate: total_cpas 
+  order_by: total_cpas desc
+}
+>>>malloy
+run: PublicAccountantsWA -> {
+  group_by: City
+  aggregate: total_cpas 
+  order_by: total_cpas desc
+}
+>>>markdown
+Findings:
+
+The cities with the highest concentration of CPAs are likely the largest urban centers (such as Seattle).
+Smaller cities or rural areas might have fewer CPAs, providing opportunities for businesses to expand or offer services in underserved regions.
+>>>malloy
+# bar_chart
+run: PublicAccountantsWA -> {
+  group_by: City
+  aggregate: total_cpas 
+  order_by: total_cpas desc
+}
+>>>markdown
+Findings:
+A number of licenses are set to expire in the coming year, which could trigger efforts to encourage renewals or offer continuing education programs.
+Renewal rates can vary, so further analysis could help businesses target CPAs whose licenses are about to expire for renewal reminders or marketing efforts
+>>>malloy
+run: PublicAccountantsWA -> {
+  where: Expiration_Date.day ? @2025-01-01 to @2025-03-01
+  aggregate: total_cpas
+}
+>>>markdown
+Show names of CPAs and their countries who's licence expires between 01/01/2024 & 01/01/2025
+>>>malloy
+run: PublicAccountantsWA -> {
+  where: Expiration_Date.day ? @2024-01-01 to @2025-01-01
+  group_by: 
+    Country
+    First_Name
+    Last_Name
+}
+>>>markdown
+Visualization: Bar chart of total lapsed licensees by expiration year
+>>>malloy
+# bar_chart
+run: PublicAccountantsWA -> {
+    group_by: Expiration_Date_year 
+    aggregate: total_lapsed_licensee
+}
+>>>markdown
+Visualization: Bar chart of total CPAs by Status
+>>>malloy
+# bar_chart
+run: PublicAccountantsWA -> {
+    group_by: Status
+    aggregate: total_cpas
+}
+>>>markdown
+How many CPAs' license are expiring each year. 
+>>>malloy
+run: PublicAccountantsWA -> {
+    group_by: Expiration_Date_year
+    aggregate: total_cpas
+}
+>>>markdown
+CPAs with "Licensed to practice public accounting" status grouped by state:
+>>>markdown
+How many CPAs are licensed to practice public accounting by State
+>>>malloy
+run: PublicAccountantsWA -> {
+  where: Status = 'Licensed to practice public accounting'
+  group_by: State
+  aggregate: total_licensed_to_practice_public_accounting
+  order_by: total_licensed_to_practice_public_accounting desc
+}
+>>>markdown
+## Trends in Status Changes Over Time
+Investigate if certain statuses change over time based on the Original Issue Date.
+This query groups CPAs by both the year their license was issued and their status. It helps you see if there are trends in certain statuses based on when CPAs were first licensed.
+
+>>>malloy
+run: PublicAccountantsWA -> {
+  group_by: Original_Issue_Date_year, Status
+  aggregate: total_cpas
+  order_by: Original_Issue_Date_year desc
+}
+>>>markdown
+How many CPAs let their licenses lapse each year?
+This tracks the yearly trend of CPAs who have allowed their licenses to lapse.
+>>>malloy
+run: PublicAccountantsWA -> {
+  where: Status = 'Lapsed Licensee'
+  group_by: Expiration_Date_year is Expiration_Date.year
+  aggregate: total_lapsed_licensee
+  order_by: Expiration_Date_year desc
+}
