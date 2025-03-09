@@ -8,6 +8,14 @@ This project analyzes the **List of Public Accountants in Washington State** dat
 4. How many CPAs are retiring each year?
 
 ## Visualizations and Insights
+![771EE89D-0849-4010-9653-5FF03AD6AEDC_1_201_a](https://github.com/user-attachments/assets/2cc9243f-fd06-4b00-af1f-6b5c11725d99)
+![25B80990-AC88-476C-9729-312A112987BA_1_201_a](https://github.com/user-attachments/assets/ad9ce1e8-72d7-43c5-aa05-acee92fd50cc)
+![02CD3D7D-C99B-4B12-A27B-0F0CE1BEC2CA_1_201_a](https://github.com/user-attachments/assets/b23c0d5e-8431-463c-9d13-fa9b36d964f7)
+![7A1463E2-0F9F-4920-A737-189BD77AB0CD_1_201_a](https://github.com/user-attachments/assets/6aa4eec3-ce8c-456e-b96d-1deab1766968)
+![E6DCC5AF-F2A4-43E2-86D9-ECD364501475_1_201_a](https://github.com/user-attachments/assets/45c74fa2-2e0e-481c-b453-f6c624a56d2e)
+
+
+
 
 
 
